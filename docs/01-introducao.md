@@ -1,5 +1,3 @@
-# Introdução
-
 ## 📖 O que é este template?
 
 API REST completa para gerenciamento de tarefas (To-Do List) construída com **Fastify**, **Prisma ORM** e **PostgreSQL**. Pronta para produção com CRUD completo, filtros, paginação, validação e Docker.
