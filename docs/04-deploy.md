@@ -19,11 +19,11 @@ Crie um arquivo `.shardcloud` na raiz do projeto:
 
 ```bash
 DISPLAY_NAME=Tasks API
-ENTRYPOINT=src/index.js
+MAIN=src/index.js
 MEMORY=1024
 VERSION=recommended
 SUBDOMAIN=tasks-api
-START=npm install && npm run migrate && npm run seed && npm start
+CUSTOM_COMMAND=npm install && npm run migrate && npm run seed && npm start
 DESCRIPTION=API REST para gerenciamento de tarefas com Fastify e PostgreSQL
 ```
 
