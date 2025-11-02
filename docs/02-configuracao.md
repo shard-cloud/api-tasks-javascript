@@ -122,26 +122,23 @@ DATABASE=postgresql://taskuser:taskpass@localhost:5432/tasks_db
 
 ## 🔄 Migrations
 
-### Aplicar Migrations
+### Migrations Automáticas ✨
+
+As migrations são aplicadas **automaticamente** quando você roda:
 
 ```bash
-# Produção (aplica migrations pendentes)
-npm run migrate
+# Desenvolvimento (aplica migrations + inicia servidor)
+npm run dev
 
-# Desenvolvimento (cria nova migration interativa)
-npm run migrate:dev
-
-# Reset completo (⚠️ apaga todos dados)
-npm run migrate:reset
+# Produção (via Dockerfile)
+# Migrations são aplicadas antes do servidor iniciar
 ```
 
-### Criar Nova Migration
+### Aplicar Migrations Manualmente (se necessário)
 
 ```bash
-# Edite prisma/schema.prisma
-# Exemplo: adicionar campo 'priority'
-
-npm run migrate:dev --name add-priority-field
+# Aplicar migrations pendentes
+npm run migrate
 ```
 
 ### Verificar Status
@@ -154,11 +151,19 @@ npx prisma migrate status
 ls -la prisma/migrations/
 ```
 
-## 🌱 Seeds
+### Migrations Incluídas
+
+O projeto já vem com a migration inicial:
+- `20241102000000_init` - Cria tabela `tasks` com índices
+
+## 🌱 Seeds (Opcional)
 
 ### Rodar Seeds
 
+O seed é **completamente opcional**. O banco vem vazio por padrão.
+
 ```bash
+# Popular com 10 tarefas de exemplo
 npm run seed
 ```
 

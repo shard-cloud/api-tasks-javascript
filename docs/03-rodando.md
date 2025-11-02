@@ -21,19 +21,14 @@ cp .env.example .env
 # 3. Instalar dependências
 npm install
 
-# 4. Gerar Prisma Client
-npx prisma generate
-
-# 5. Sincronizar schema com banco
-npx prisma db push
-
-# 6. Rodar seed
-npm run seed
-
-# 7. Iniciar servidor (porta 80)
+# 4. Iniciar servidor (migrations automáticas ✨)
 npm run dev
 
+# 5. (Opcional) Popular com dados de exemplo
+npm run seed
 ```
+
+O servidor aplica migrations automaticamente e fica pronto para uso!
 
 ### Verificar se está funcionando
 
@@ -80,18 +75,17 @@ docker-compose logs -f api
 docker-compose ps
 ```
 
-### Migrations e Seed (Docker)
+### Seed e Studio (Docker)
 
 ```bash
-# Aplicar migrations
-docker-compose exec api npm run migrate
-
-# Rodar seed
+# (Opcional) Popular com dados de exemplo
 docker-compose exec api npm run seed
 
 # Prisma Studio
 docker-compose exec api npm run studio
 ```
+
+**Nota:** Migrations são aplicadas automaticamente ao iniciar o container.
 
 ### Parar
 
@@ -274,7 +268,8 @@ npx prisma db pull --print
 ### Resetar Banco (⚠️ apaga tudo)
 
 ```bash
-npm run migrate:reset
+# Dropar e recriar schema
+npx prisma migrate reset --force
 ```
 
 ### Verificar Porta em Uso
@@ -329,11 +324,10 @@ O servidor usa `--watch` do Node.js:
 Antes de considerar pronto:
 
 - [ ] `npm install` sem erros
-- [ ] `npm run migrate` aplica migrations
-- [ ] `npm run seed` popula dados
-- [ ] `npm run dev` inicia servidor
+- [ ] `npm run dev` inicia servidor e aplica migrations automaticamente
 - [ ] `curl /health` retorna status ok
-- [ ] `curl /tasks` retorna lista de tarefas
+- [ ] `curl /tasks` retorna lista vazia (ou populada se rodou seed)
+- [ ] `npm run seed` popula dados (opcional)
 - [ ] `npm test` passa todos os testes
 - [ ] Prisma Studio abre e mostra dados
 - [ ] Docker Compose sobe corretamente

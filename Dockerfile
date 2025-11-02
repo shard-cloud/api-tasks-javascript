@@ -7,7 +7,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN npm ci --only=production && \
-    npx prisma generate
+  npx prisma generate
 
 # Stage 2: Production
 FROM node:20-alpine
@@ -26,7 +26,7 @@ RUN npx prisma generate
 
 # Non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+  adduser -S nodejs -u 1001
 
 USER nodejs
 

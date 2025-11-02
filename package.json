@@ -7,11 +7,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
-    "migrate": "prisma migrate deploy",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:reset": "prisma migrate reset --force",
+    "dev": "npx prisma migrate deploy && node --watch src/index.js",
+    "start": "npx prisma migrate deploy && node src/index.js",
+    "migrate": "npx prisma migrate deploy",
     "seed": "node seed/seed.js",
     "studio": "prisma studio",
     "lint": "eslint src/ --fix",

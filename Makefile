@@ -15,9 +15,6 @@ start: ## Rodar em modo produção
 migrate: ## Aplicar migrations
 	npm run migrate
 
-migrate-dev: ## Criar nova migration
-	npm run migrate:dev
-
 seed: ## Popular banco com dados
 	npm run seed
 

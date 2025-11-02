@@ -35,10 +35,9 @@ cp .env.example .env
 # Subir banco e aplicação
 docker-compose up -d
 
-# Rodar migrations
-docker-compose exec api npm run migrate
+# Migrations são aplicadas automaticamente ✨
 
-# Rodar seed
+# (Opcional) Popular com dados de exemplo
 docker-compose exec api npm run seed
 
 # Acesse: http://localhost:80/health
@@ -53,28 +52,21 @@ cp .env.example .env
 # Instalar dependências
 npm install
 
-# Gerar cliente Prisma
-npx prisma generate
-
-# Sincronizar schema com banco
-npx prisma db push
-
-# Rodar seed
-npm run seed
-
-# Iniciar servidor (porta 80)
+# Iniciar servidor (migrations automáticas)
 npm run dev
+
+# (Opcional) Popular com dados de exemplo
+npm run seed
 
 # Acesse: http://localhost:80/health
 ```
 
 ## 📦 Scripts
 
-- `npm run dev` – Servidor de desenvolvimento (com hot-reload)
+- `npm run dev` – Servidor de desenvolvimento (aplica migrations automaticamente + hot-reload)
 - `npm start` – Servidor de produção
-- `npm run migrate` – Aplicar migrations
-- `npm run migrate:dev` – Criar nova migration
-- `npm run seed` – Popular banco com dados de exemplo
+- `npm run migrate` – Aplicar migrations manualmente (se necessário)
+- `npm run seed` – Popular banco com dados de exemplo (opcional)
 - `npm test` – Executar testes
 - `npm run lint` – Linter (ESLint)
 - `npm run format` – Formatar código (Prettier)

@@ -21,24 +21,23 @@ MAIN=src/index.js
 MEMORY=1024
 VERSION=recommended
 SUBDOMAIN=tasks-api
-CUSTOM_COMMAND=npm install && npm run migrate && npm run seed && npm start
+CUSTOM_COMMAND=npm install && npm start
 DESCRIPTION=API REST para gerenciamento de tarefas com Fastify e PostgreSQL
 ```
+
+**Nota:** Migrations são aplicadas automaticamente ao iniciar a aplicação.
 
 ### 2. Configurar variáveis de ambiente
 
 Configure as variáveis no dashboard da Shard Cloud:
 
 ```env
-# Database - REQUIRED
-DATABASE=postgres://user:password@host:port/database?ssl=true
+# Database (obrigatório)
+DATABASE=postgresql://user:password@host:port/database?ssl=true
 
-# Server
+# Server (opcional)
 PORT=80
-APP_SECRET=your-secret-key-change-in-production
-
-# Task configuration
-MAX_TASKS_PER_PAGE=50
+NODE_ENV=production
 ```
 
 ## 📦 Preparação para deploy
@@ -49,24 +48,21 @@ MAX_TASKS_PER_PAGE=50
 # Instalar dependências
 npm install
 
-# Executar migrações
-npm run migrate
+# Iniciar aplicação (migrations automáticas ✨)
+npm run dev
 
-# Popular banco com dados de exemplo
+# (Opcional) Popular com dados de exemplo
 npm run seed
-
-# Iniciar aplicação
-npm start
 ```
 
 ### 2. Verificar funcionamento
 
 ```bash
 # Testar health endpoint
-curl http://localhost/health
+curl http://localhost:80/health
 
 # Testar API
-curl http://localhost/api/v1/tasks
+curl http://localhost:80/tasks
 ```
 
 ## 🚀 Deploy na Shard Cloud
@@ -98,9 +94,11 @@ curl http://localhost/api/v1/tasks
    - Conecte seu repositório GitHub/GitLab
 
 2. **Configurar build**
-   - **Build command:** `npm install && npm run migrate && npm run seed`
+   - **Build command:** `npm install`
    - **Start command:** `npm start`
    - **Node version:** `20` (recomendado)
+   
+   **Nota:** Migrations são aplicadas automaticamente ao iniciar.
 
 3. **Deploy automático**
    - Cada push na branch principal fará deploy automático
@@ -121,9 +119,10 @@ curl http://localhost/api/v1/tasks
    - Configure como variável `DATABASE` na aplicação
    - Exemplo: `postgres://user:pass@host:port/db?ssl=true`
 
-3. **Executar migrações**
-   - As migrações Prisma são executadas automaticamente na inicialização
-   - Verifique logs para confirmar sucesso
+3. **Migrations automáticas**
+   - As migrações são executadas automaticamente ao iniciar a aplicação
+   - Verifique os logs para confirmar: `✅ Database tables created successfully`
+   - Não é necessário rodar comandos manuais
 
 ### Banco externo
 
@@ -164,9 +163,9 @@ Configure variáveis sensíveis no dashboard:
 2. Vá para **"Environment Variables"**
 3. Adicione suas variáveis:
    ```
-   DATABASE=postgres://user:pass@host:port/db?ssl=true
-   APP_SECRET=sua-chave-secreta-super-segura
+   DATABASE=postgresql://user:pass@host:port/db?ssl=true
    PORT=80
+   NODE_ENV=production
    ```
 
 ## 🔍 Monitoramento e logs
@@ -188,9 +187,9 @@ Configure variáveis sensíveis no dashboard:
 
 A aplicação inclui endpoints de monitoramento:
 
-- `GET /health` - Status geral da API
-- `GET /api/v1/tasks` - Lista de tarefas
-- `POST /api/v1/tasks` - Criar nova tarefa
+- `GET /health` - Status geral da API e conexão com banco
+- `GET /tasks` - Lista de tarefas
+- `POST /tasks` - Criar nova tarefa
 
 ## 🔒 Segurança
 
@@ -234,10 +233,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Run migrations
-        run: npm run migrate
-        env:
-          DATABASE: ${{ secrets.DATABASE_URL }}
+      - name: Run tests
+        run: npm test
       
       - name: Deploy to Shard Cloud
         run: |
@@ -279,33 +276,36 @@ npm audit
 2. Confirme se banco está acessível
 3. Teste conexão localmente
 
-### Erro de migração Prisma
+### Migrations não aplicadas
 
 ```bash
-# Resetar banco localmente
-npx prisma db push --force-reset
-
-# Executar migrações
+# Aplicar migrations manualmente (se necessário)
 npm run migrate
+
+# Verificar status
+npx prisma migrate status
 
 # Gerar cliente Prisma
 npx prisma generate
 ```
 
+**Nota:** Em produção, as migrations são aplicadas automaticamente ao iniciar a aplicação via Dockerfile.
+
 ## ✅ Checklist de deploy
 
 - [ ] Arquivo `.shardcloud` configurado
 - [ ] Dependências instaladas (`npm install`)
-- [ ] Migrações executadas (`npm run migrate`)
 - [ ] Banco PostgreSQL configurado
-- [ ] Variáveis de ambiente configuradas
+- [ ] Variável `DATABASE` configurada
+- [ ] Projeto testado localmente (`npm run dev`)
 - [ ] Projeto zipado ou conectado ao Git
 - [ ] Deploy realizado no dashboard
 - [ ] Aplicação acessível via URL
-- [ ] Health endpoint funcionando (`/health`)
-- [ ] API endpoints testados (`/api/v1/tasks`)
-- [ ] HTTPS ativo
-- [ ] Logs monitorados
+- [ ] Health endpoint funcionando (`GET /health`)
+- [ ] API endpoints testados (`GET /tasks`, `POST /tasks`)
+- [ ] Logs mostram "Database tables created successfully" (primeira execução)
+- [ ] HTTPS ativo automaticamente
+- [ ] Logs monitorados no dashboard
 
 ## 🎉 Sucesso!
 

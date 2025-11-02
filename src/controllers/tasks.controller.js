@@ -10,9 +10,26 @@ import {
 export class TasksController {
   // GET /tasks - List all tasks with pagination and filters
   async list(request, reply) {
+    // Validate query parameters first
+    let page, limit, status, search;
     try {
-      const { page, limit, status, search } = validate(querySchema, request.query);
+      const validated = validate(querySchema, request.query);
+      page = validated.page;
+      limit = validated.limit;
+      status = validated.status;
+      search = validated.search;
+    } catch (error) {
+      if (error.name === 'ZodError') {
+        return reply.status(400).send({
+          error: true,
+          message: 'Validation error',
+          details: error.errors,
+        });
+      }
+      throw error;
+    }
 
+    try {
       const skip = (page - 1) * limit;
 
       // Build where clause
@@ -52,11 +69,18 @@ export class TasksController {
         },
       });
     } catch (error) {
-      if (error.name === 'ZodError') {
-        return reply.status(400).send({
-          error: true,
-          message: 'Validation error',
-          details: error.errors,
+      // Handle table not exists error (P2021) - return empty list
+      if (error.code === 'P2021') {
+        return reply.send({
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+            hasNext: false,
+            hasPrev: false,
+          },
         });
       }
       throw error;
@@ -87,6 +111,13 @@ export class TasksController {
           message: 'Invalid task ID',
         });
       }
+      // Handle table not exists error (P2021) - return 404
+      if (error.code === 'P2021') {
+        return reply.status(404).send({
+          error: true,
+          message: 'Task not found',
+        });
+      }
       throw error;
     }
   }
@@ -107,6 +138,13 @@ export class TasksController {
           error: true,
           message: 'Validation error',
           details: error.errors,
+        });
+      }
+      // Handle table not exists error (P2021)
+      if (error.code === 'P2021') {
+        return reply.status(503).send({
+          error: true,
+          message: 'Database not initialized. Please run migrations.',
         });
       }
       throw error;
@@ -133,7 +171,7 @@ export class TasksController {
           details: error.errors,
         });
       }
-      if (error.code === 'P2025') {
+      if (error.code === 'P2025' || error.code === 'P2021') {
         return reply.status(404).send({
           error: true,
           message: 'Task not found',
@@ -165,7 +203,7 @@ export class TasksController {
           message: 'Invalid task ID',
         });
       }
-      if (error.code === 'P2025') {
+      if (error.code === 'P2025' || error.code === 'P2021') {
         return reply.status(404).send({
           error: true,
           message: 'Task not found',
@@ -193,7 +231,7 @@ export class TasksController {
           message: 'Invalid task ID',
         });
       }
-      if (error.code === 'P2025') {
+      if (error.code === 'P2025' || error.code === 'P2021') {
         return reply.status(404).send({
           error: true,
           message: 'Task not found',
